@@ -1,0 +1,38 @@
+.container_login{
+    background-color: #450B53;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container_login .card_login{
+    background-color: #fff;
+    width: 500px;
+    padding: 50px;
+    border-radius: 20px;
+}
+
+.container_login .card_login h1 {
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+.container_login .card_login input {
+    border: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #450B53;
+}
+
+.container_login .card_login button {
+    border: 0;
+    background-color: #450B53;
+    padding: 10px 30px;
+    color: #fff;
+}
+
+.container_form {
+    display: flex;
+    flex-direction: column;
+}
+
