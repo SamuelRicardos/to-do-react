@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdEdit, MdDelete } from "react-icons/md";
 import "../home/styles.css"
 
@@ -10,30 +10,6 @@ interface Task {
     id: string
 }
 
-const tasks = [
-    {
-      id: "01",
-      title:"Tarefa 1",
-      category: "Trabalho",
-      description: "Descricao de teste",
-      date:"2023-05-03"
-    },
-    {
-      id: "02",
-      title:"Tarefa 2",
-      category: "Trabalho",
-      description: "Descricao de teste 2",
-      date:"2023-05-03"
-    },
-    {
-      id: "03",
-      title:"Tarefa 3",
-      category: "Estudo",
-      description: "Descricao de teste 3",
-      date:"2023-05-03"
-    }
-  ];
-
 export default function Home() {
     const [titulo, setTitulo] = useState("");
     const [categoria, setCategoria] = useState("");
@@ -41,7 +17,15 @@ export default function Home() {
     const [descricao, setDescricao] = useState("");
     const [id, setId] = useState("");
 
-    const [tarefas, setTarefas] = useState(tasks);
+    const [tarefas, setTarefas] = useState<Task[]>([]);
+
+    useEffect(() => {
+        const tasksSalvas = localStorage.getItem("@tasks")
+
+        if(tasksSalvas) {
+            setTarefas(JSON.parse(tasksSalvas));
+        }
+    }, [])
 
     function submitForm(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -49,7 +33,18 @@ export default function Home() {
         if(id) {
             editTask();
         } else {
-            setTarefas([...tarefas, {id: String(Date.now()), title: titulo, category: categoria, date: data, description: descricao}]);
+            const novaTarefa: Task = {
+                id: Date.now().toString(),
+                title: titulo,
+                category: categoria,
+                date: data,
+                description: descricao
+            };
+            const novasTarefas = [...tarefas, novaTarefa];
+
+            setTarefas(novasTarefas);
+
+            localStorage.setItem("@tasks", JSON.stringify(novasTarefas))
     
             setTitulo("")
             setDescricao("")
@@ -58,11 +53,6 @@ export default function Home() {
 
         }
 
-        // const copyArray = [...tarefas]
-        
-        // copyArray.push({id: String(Date.now()),title: titulo, category: categoria, date: data, description: descricao})
-
-        // console.log({titulo, categoria, data, descricao});
     }
 
     function preencheEstados(tarefa: Task) {
@@ -88,11 +78,22 @@ export default function Home() {
 
         setTarefas(copiaTarefas);
 
+        localStorage.setItem("@tasks", JSON.stringify(copiaTarefas))
+
         setTitulo("")
         setDescricao("")
         setId("");
         setData("")
         setCategoria("")
+    }
+
+    function apagarTarefa(id: string) {
+
+        const arrayFiltrado = tarefas.filter((tarefa) => tarefa.id != id)
+
+        localStorage.setItem("@tasks", JSON.stringify(arrayFiltrado))
+
+        setTarefas(arrayFiltrado)
     }
 
     return(
@@ -135,7 +136,9 @@ export default function Home() {
             </div>
 
             <div className="container_tasks">
-                <h2>Lista de tarefas</h2>
+                <h2>Lista de tarefas - Total: {tarefas.length}</h2>
+
+                {tarefas.length < 1 && "Nenhuma tarefa cadastrada"}
 
                 <ul>
                     {tarefas.map((tarefa) => (
@@ -146,7 +149,7 @@ export default function Home() {
                             <p>{tarefa.description}</p>
                             <div>
                             <MdEdit color="green" size={30} onClick={() => preencheEstados(tarefa)} />
-                            <MdDelete color="red" size={30} onClick={() => alert("Ok2")} />
+                            <MdDelete color="red" size={30} onClick={() => apagarTarefa(tarefa.id)} />
                             </div>
                         </li>
                     ))}
